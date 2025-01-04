@@ -21,3 +21,16 @@ services:
       - "8084:80"  # PhpMyAdmin accessible sur localhost:8080
     environment:
       PMA_HOST: db
+
+  web:
+    build:
+      context: ./web
+    container_name: flask_web
+    ports:
+      - "5000:5000"  # Le serveur Flask sera accessible sur http://localhost:5000
+    environment:
+      FLASK_ENV: development
+    depends_on:
+      - db
+    volumes:
+      - ./web:/app

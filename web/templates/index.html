@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produits - Comparateur de prix</title>
+    <style>
+        .highlight {
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comparateur de prix</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Référence</th>
+                <th>Nom</th>
+                <th>Prix</th>
+                <th>Site (URL)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ref, products in products_grouped.items() %}
+                {% for product in products %}
+                    <tr>
+                        {% if loop.index == 1 %} <!-- Si c'est le premier produit, donc le moins cher -->
+                            <td rowspan="{{ products|length }}">{{ product['reference'] }}</td>
+                        {% endif %}
+                        <td>{{ product['name'] }}</td>
+                        <td class="{% if loop.first %}highlight{% endif %}">
+                            {{ product['price'] }} €
+                        </td>
+                        <td><a href="{{ product['url'] }}" target="_blank">Voir l'article</a></td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
