@@ -1,0 +1,11 @@
+CREATE DATABASE IF NOT EXISTS scrapy_db;
+
+USE scrapy_db;
+
+CREATE TABLE IF NOT EXISTS products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price FLOAT NOT NULL,
+    url TEXT NOT NULL,
+    reference VARCHAR(255) NOT NULL
+);

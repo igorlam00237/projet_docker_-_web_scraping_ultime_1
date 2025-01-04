@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password  # Mot de passe pour l'utilisateur root
+      MYSQL_DATABASE: scrapy_db      # Nom de la base de données
+    ports:
+      - "3307:3306"  # Port exposé pour MySQL
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Initialise la DB avec init.sql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8084:80"  # PhpMyAdmin accessible sur localhost:8080
+    environment:
+      PMA_HOST: db
