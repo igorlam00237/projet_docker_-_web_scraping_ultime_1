@@ -1,34 +1,46 @@
 import scrapy
 from watch_comp.items import WatchCompItem
+import json
 
 class Spider1Spider(scrapy.Spider):
     name = "spider_1"
-    allowed_domains = ["www.cleor.com"]
-    start_urls = ["https://www.cleor.com/montres-homme-C10G1.htm"]
+    allowed_domains = ["maty.com"]
+    start_urls = ["https://www.maty.com/montres.html"]
 
     def parse(self, response):
-        watches = response.xpath("//div[contains(@class, 'product-thumb')]")
-
+        # Extract watches on the initial page
+        watches = response.xpath("//div[contains(@class, 'produit pl-event')]")
         for watch in watches:
-
             item = WatchCompItem()
+            
+            item['name'] = watch.xpath(".//h2[contains(@class, 'desc')]//span/a/text()").get()
+            item['price'] = watch.xpath(".//p[contains(@class, 'prix-final')]/text()").get()
+            
+            relative_url = watch.xpath(".//h2[contains(@class, 'desc')]//@href").get()
+            
+            # Skip if name or price is missing
+            if not item['name'] or not item['price']:
+                self.logger.warning(f"Missing essential data: {item}")
+                continue
 
-            item['name'] = watch.xpath(".//div[contains(@class, 'caption')]/div[contains(@class, 'name')]/a/text()").get()
-            item['price'] = watch.xpath(".//div[contains(@class, 'caption')]/p[@class='price']/text()").get()
+            if relative_url:
+                item['url'] = response.urljoin(relative_url)
+                yield response.follow(item['url'], callback=self.parse_item, meta={'item': item})
 
-            relative_url = watch.xpath(".//div[contains(@class, 'caption')]/div[contains(@class, 'name')]/a/@href").get()
-            item['url'] = response.urljoin(relative_url)
-
-            yield item
-
-            # yield {
-            #     'name': watch.xpath(".//div[contains(@class, 'caption')]/div[contains(@class, 'name')]/a/text()").get(),
-            #     'price': watch.xpath(".//div[contains(@class, 'caption')]/p[@class='price']/text()").get(),
-            #     'url': watch.xpath(".//div[contains(@class, 'caption')]/div[contains(@class, 'name')]/a/@href").get()
-            # }
+            #yield item
 
         # Find link to next page
-        next_page = response.xpath("//ul/li/a[@rel='next']/@href").get()
+        next_page = response.xpath("//div[contains(@class, 'page-buttons next')]//span/@data-href").get()
 
         if next_page:
-            yield response.follow(next_page, callback=self.parse) 
+            yield response.follow(next_page, callback=self.parse)
+
+    
+    def parse_item(self, response):
+
+        item = response.meta['item']
+
+        item['ref'] = response.xpath("//div[@id='generales']/ul/li[3]/p[2]/text()").get()
+
+        yield item
+

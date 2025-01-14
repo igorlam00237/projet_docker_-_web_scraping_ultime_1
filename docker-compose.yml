@@ -25,6 +25,7 @@ services:
   web:
     build:
       context: ./web
+    image: flask_web_image
     container_name: flask_web
     ports:
       - "5000:5000"  # Le serveur Flask sera accessible sur http://localhost:5000

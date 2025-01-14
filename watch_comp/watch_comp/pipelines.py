@@ -21,7 +21,8 @@ class WatchCompPipeline:
     def process_item(self, item, spider):
 
         if 'price' in item:
-            cleaned_price = re.sub(r'[^\d,\.]', '', item['price'])
+            price_str = str(item['price'])
+            cleaned_price = re.sub(r'[^\d,\.]', '', price_str)
             cleaned_price = cleaned_price.replace(',', '.')
 
             try:
@@ -31,6 +32,7 @@ class WatchCompPipeline:
                 item['price'] = None
 
         # Nettoyage de la référence
+        
         if 'ref' in item:
             cleaned_ref = item['ref'].strip()  # Retirer les espaces autour
             cleaned_ref = re.sub(r'\s+', '', cleaned_ref)  # Retirer les espaces internes
