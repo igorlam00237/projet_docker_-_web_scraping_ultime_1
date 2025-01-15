@@ -20,6 +20,7 @@
                 <th>Nom</th>
                 <th>Prix</th>
                 <th>Site (URL)</th>
+                <th>Nom du site</th>
             </tr>
         </thead>
         <tbody>
@@ -34,6 +35,14 @@
                             {{ product['price'] }} €
                         </td>
                         <td><a href="{{ product['url'] }}" target="_blank">Voir l'article</a></td>
+                        <td>
+                            {% if 'maty.com' in product['url'] %} Maty
+                            {% elif 'bijouteriehaubois.fr' in product['url'] %} Bijouterie Haubois
+                            {% elif 'cleor.com' in product['url'] %} Cleor
+                            {% elif 'ocarat.com' in product['url'] %} Ocarat
+                            {% else %} Inconnu
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             {% endfor %}
